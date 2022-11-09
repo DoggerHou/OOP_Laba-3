@@ -11,10 +11,10 @@ string People_Names[36];
 class BaseClass {        //базовый абстрактный класс 
 public:
     BaseClass() {
-        cout << "BaseClass()\n";
+//        cout << "BaseClass()\n";
     }
     virtual ~BaseClass() {
-        cout << "~BaseClass()\n";
+ //       cout << "~BaseClass()\n";
     }
     virtual void ShowName() = 0;
 };
@@ -26,13 +26,13 @@ private:
     int height;                 //Рост человека
 public:     
     People() {
-        cout << "People()\n";
+//        cout << "People()\n";
         name = People_Names[rand() % 36];
         weight = rand() % 100 + 50;     //вес
         height = rand() % 50 + 150;     //рост
     }
     virtual ~People() {         //деструктор
-        cout << "~People()\n";
+//        cout << "~People()\n";
     }
     void SetPeopleParam(int weigth, int height) { //конструктор с параметрами
             this->weight = weigth;
@@ -40,7 +40,7 @@ public:
     }
     
     void ShowParam() {
-        cout <<"\t\t" << name << "   " << weight << "   " << height << endl;
+ //       cout <<"\t\t" << name << "   " << weight << "   " << height << endl;
     }
 
 
@@ -52,14 +52,14 @@ private:
     string name;
 public:
     Metal() {
-        cout << "Metal()\n";
+//        cout << "Metal()\n";
         name = Metal_Names[rand() % 16];
     }
     virtual ~Metal() {
-        cout << "~Metal()\n";
+ //       cout << "~Metal()\n";
     }
     virtual void ShowName() override {
-        cout <<"\t\t\t" << name << endl;
+//        cout <<"\t\t\t" << name << endl;
     }
 };
 
@@ -86,13 +86,13 @@ public:
                 SecondMatrix[i][j] = rand()%100;
                 AnswerMatrix[i][j] = NULL;
             }
-        cout << "Matrix()\n";
+//        cout << "Matrix()\n";
     }
     virtual ~Matrix() {
         delete FirstMatrix;
         delete SecondMatrix;
         delete AnswerMatrix;
-        cout << "~Matrix()\n";
+//        cout << "~Matrix()\n";
     }
     void SumMatrix() {
         for (int i = 0; i < matrix_size; i++)
@@ -108,11 +108,12 @@ public:
             }
     }
     void PrintAnswer() {
-        for (int i = 0; i < matrix_size; i++) {
+        for (int i = 0; i < matrix_size; i++)
             for (int j = 0; j < matrix_size; j++)
-                cout << setw(8) << AnswerMatrix[i][j];
-            cout << endl;
-        }
+                int k;
+                //               cout << setw(8) << AnswerMatrix[i][j];
+                //           cout << endl;
+                //       }
     }
     virtual void ShowName() override {}
 };
