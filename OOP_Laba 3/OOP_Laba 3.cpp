@@ -169,7 +169,6 @@ public:
 int main()
 {
     int action_amount;
-    unsigned int Start_Time = clock();
     setlocale(LC_ALL,"rus");
     srand(time(NULL));
     ifstream fin1("Metals.txt");
@@ -185,6 +184,7 @@ int main()
     Storage MyStorage(1000);
     cout << "Введите количество действий:";
     cin >> action_amount;
+    unsigned int Start_Time = clock();
     for (int i = 0; i < action_amount; i++) {
         int random_chose = rand() % 3;
         if (random_chose == 0) {        //случайное удаление
@@ -223,21 +223,6 @@ int main()
             }
         }
     }
-
-
-
-    /**for (int i = 0; i < 1000; i++) {
-        cout << i;
-        if(rand()%2==1)
-            MyStorage.SetObject(i, new Metal);
-        else
-            MyStorage.SetObject(i, new People);
-        if (dynamic_cast<Metal*>(MyStorage.GetObjectClass(i)))
-            dynamic_cast<Metal*>(MyStorage.GetObjectClass(i))->ShowName();
-        else
-            dynamic_cast<People*>(MyStorage.GetObjectClass(i))->ShowParam();
-    }
-    */
     unsigned int End_Time = clock();
     cout <<"\nВремя выполнения программы:"<< End_Time - Start_Time;
 }
