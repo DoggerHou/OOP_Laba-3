@@ -31,19 +31,20 @@ public:
         weight = rand() % 100 + 50;     //вес
         height = rand() % 50 + 150;     //рост
     }
+    virtual ~People() {         //деструктор
+        cout << "~People()\n";
+    }
     void SetPeopleParam(int weigth, int height) { //конструктор с параметрами
             this->weight = weigth;
             this->height = height;
     }
-    virtual ~People() {
-        cout << "~People()\n";
-    }
-    virtual void ShowName() override {//переопределенная функиця Вывода имени
-        cout << name<<endl;
-    }
+    
     void ShowParam() {
-        cout << name << "   " << weight << "   " << height << endl;
+        cout <<"\t\t" << name << "   " << weight << "   " << height << endl;
     }
+
+
+    virtual void ShowName() override {} //переопределенная функиця Вывода имени
 };
 
 class Metal : public BaseClass { //Класс металлы
@@ -58,7 +59,7 @@ public:
         cout << "~Metal()\n";
     }
     virtual void ShowName() override {
-        cout << name<<endl;
+        cout <<"\t\t\t" << name << endl;
     }
 };
 
@@ -85,11 +86,13 @@ public:
                 SecondMatrix[i][j] = rand()%100;
                 AnswerMatrix[i][j] = NULL;
             }
+        cout << "Matrix()\n";
     }
-    ~Matrix() {
+    virtual ~Matrix() {
         delete FirstMatrix;
         delete SecondMatrix;
         delete AnswerMatrix;
+        cout << "~Matrix()\n";
     }
     void SumMatrix() {
         for (int i = 0; i < matrix_size; i++)
@@ -133,40 +136,95 @@ public:
     Storage(int size) {         //Конструктор(задаем размер при создании)
         this->size = size;
         objects = new BaseClass * [size];
+        for (int i = 0; i < size; i++)  //костыль для обработки утечки памяти
+            objects[i] = nullptr;
     }
     void SetObject(int index, BaseClass* object) {//помещаем объект
         if (index + 1 > size)
             Resize();
-        objects[index] = object;
+        if(objects[index] == nullptr)           //проверка, если в индексе есть элемент
+            objects[index] = object;
+        else {
+            delete objects[index];
+            objects[index] = object;
+        }
     }
+
     BaseClass *GetObjectClass(int index) {      //возвращаем указатель на объект дочернего класса
         return objects[index];
     }
+
     void DeleteObject(int index) {              //удаляем объект
-        delete objects[index];
-        for (int i = index + 1; i < size - 1; i++) {//убираем дырки после удаления
-            objects[i] = objects[i + 1];
+        if (objects[index] != nullptr) {
+            delete objects[index];
+            objects[index] = nullptr;
         }
+    }
+    int GetSize() {
+        return size;
     }
 
 };
 
 int main()
 {
-    
+    int action_amount;
     unsigned int Start_Time = clock();
     setlocale(LC_ALL,"rus");
     srand(time(NULL));
-    ifstream f1in("Metals.txt");
+    ifstream fin1("Metals.txt");
     for (int i = 0; i < 16; i++) {  //Массив имен металлов
-        f1in >> Metal_Names[i];
+        fin1 >> Metal_Names[i];
     }
     
     ifstream fin2("Names.txt");
     for (int i = 0; i < 36; i++) {  //Массив имен Людей
         fin2 >> People_Names[i];
     }
-    Storage MyStorage(200);
+
+    Storage MyStorage(1000);
+    cout << "Введите количество действий:";
+    cin >> action_amount;
+    for (int i = 0; i < action_amount; i++) {
+        int random_chose = rand() % 3;
+        if (random_chose == 0) {        //случайное удаление
+            int random_index = rand() % MyStorage.GetSize();
+            MyStorage.DeleteObject(random_index);
+        }
+        if (random_chose == 1) {       //случайное заполнение
+            int random_index = rand() % MyStorage.GetSize();
+            int random_class = rand() % 3;
+            if (random_class == 0)
+                MyStorage.SetObject(random_index, new Metal);
+            if (random_class == 1)
+                MyStorage.SetObject(random_index, new People);
+            if (random_class == 2)
+                MyStorage.SetObject(random_index, new Matrix);
+        }
+        if (random_chose == 2) {    //случайный вызов методов дочерних классов
+            int random_index = rand() % MyStorage.GetSize();
+            if (dynamic_cast<Metal *>(MyStorage.GetObjectClass(random_index)))//для Metal
+                dynamic_cast<Metal *>(MyStorage.GetObjectClass(random_index))->ShowName();
+
+            if (dynamic_cast<People *>(MyStorage.GetObjectClass(random_index))) {//для People
+                if (rand() % 2 == 0)
+                    dynamic_cast<People*>(MyStorage.GetObjectClass(random_index))->ShowParam();
+                else
+                    dynamic_cast<People *>(MyStorage.GetObjectClass(random_index))
+                    ->SetPeopleParam(rand() % 1000 + 200, rand() % 20 + 10);
+            }
+            if (dynamic_cast<Matrix*>(MyStorage.GetObjectClass(random_index))) {//для Matrix
+                if (rand() % 3 == 0)
+                    dynamic_cast<Matrix*>(MyStorage.GetObjectClass(random_index))->SumMatrix();
+                else if (rand() % 3 == 1)
+                    dynamic_cast<Matrix*>(MyStorage.GetObjectClass(random_index))->MultMatrix();
+                else
+                    dynamic_cast<Matrix*>(MyStorage.GetObjectClass(random_index))->PrintAnswer();
+            }
+        }
+    }
+
+
 
     /**for (int i = 0; i < 1000; i++) {
         cout << i;
@@ -180,13 +238,6 @@ int main()
             dynamic_cast<People*>(MyStorage.GetObjectClass(i))->ShowParam();
     }
     */
-
-    Storage MyStorage2(4);
-    MyStorage2.SetObject(0, new Matrix);;
-    dynamic_cast<Matrix*>(MyStorage2.GetObjectClass(0))->MultMatrix();
-    dynamic_cast<Matrix*>(MyStorage2.GetObjectClass(0))->PrintAnswer();
-
-
     unsigned int End_Time = clock();
     cout <<"\nВремя выполнения программы:"<< End_Time - Start_Time;
 }
