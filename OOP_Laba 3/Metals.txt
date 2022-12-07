@@ -1,0 +1,16 @@
+aluminium
+brass
+bronze
+copper
+gold
+iron
+lead
+magnesium
+mercury
+nickel
+platinum
+silver
+steel
+tin
+uranium
+zinc
